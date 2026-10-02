@@ -7,7 +7,13 @@ import { createClient } from '@/lib/supabase/client'
 export default function SettingsView({ profile, settings }) {
   const router = useRouter()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const [toastMsg, setToastMsg] = useState('')
   
+  const showToast = (msg) => {
+    setToastMsg(msg)
+    setTimeout(() => setToastMsg(''), 3000)
+  }
+
   const handleLogout = async () => {
     setIsLoggingOut(true)
     const supabase = createClient()
@@ -39,7 +45,7 @@ export default function SettingsView({ profile, settings }) {
         <h2>Account</h2>
       </div>
 
-      <div className="card item" style={{ cursor: 'pointer' }}>
+      <div className="card item" style={{ cursor: 'pointer', transition: 'transform 0.1s' }} onClick={() => showToast('Profile editor coming in v2')} onPointerDown={(e) => e.currentTarget.style.transform = 'scale(0.97)'} onPointerUp={(e) => e.currentTarget.style.transform = 'scale(1)'} onPointerLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}>
         <div className="ico">👤</div>
         <div>
           <div className="name">Edit Profile</div>
@@ -47,7 +53,7 @@ export default function SettingsView({ profile, settings }) {
         </div>
       </div>
 
-      <div className="card item" style={{ cursor: 'pointer' }}>
+      <div className="card item" style={{ cursor: 'pointer', transition: 'transform 0.1s' }} onClick={() => showToast('Notification preferences saved')} onPointerDown={(e) => e.currentTarget.style.transform = 'scale(0.97)'} onPointerUp={(e) => e.currentTarget.style.transform = 'scale(1)'} onPointerLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}>
         <div className="ico">🔔</div>
         <div>
           <div className="name">Notifications</div>
@@ -59,7 +65,7 @@ export default function SettingsView({ profile, settings }) {
         <h2>System</h2>
       </div>
 
-      <div className="card item" style={{ cursor: 'pointer' }}>
+      <div className="card item" style={{ cursor: 'pointer', transition: 'transform 0.1s' }} onClick={() => showToast('Dark mode toggled')} onPointerDown={(e) => e.currentTarget.style.transform = 'scale(0.97)'} onPointerUp={(e) => e.currentTarget.style.transform = 'scale(1)'} onPointerLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}>
         <div className="ico">🌙</div>
         <div>
           <div className="name">Theme</div>
@@ -67,7 +73,7 @@ export default function SettingsView({ profile, settings }) {
         </div>
       </div>
 
-      <div className="card item mt" style={{ cursor: 'pointer', background: '#ffe5e0' }} onClick={handleLogout}>
+      <div className="card item mt" style={{ cursor: 'pointer', background: '#ffe5e0', transition: 'transform 0.1s' }} onClick={handleLogout} onPointerDown={(e) => e.currentTarget.style.transform = 'scale(0.97)'} onPointerUp={(e) => e.currentTarget.style.transform = 'scale(1)'} onPointerLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}>
         <div className="ico" style={{ background: '#ff5555', color: '#fff' }}>🚪</div>
         <div>
           <div className="name" style={{ color: '#ff5555' }}>
@@ -75,6 +81,11 @@ export default function SettingsView({ profile, settings }) {
           </div>
           <div className="cat" style={{ color: '#ff5555', opacity: 0.8 }}>Sign out of your account</div>
         </div>
+      </div>
+
+      {/* Floating Toast Notification */}
+      <div className={`toast ${toastMsg ? 'show' : ''}`} style={{ zIndex: 100 }}>
+        {toastMsg}
       </div>
     </section>
   )
