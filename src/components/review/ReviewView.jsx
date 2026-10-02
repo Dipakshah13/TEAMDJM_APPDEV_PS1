@@ -17,7 +17,7 @@ export default function ReviewView({ items }) {
   
   if (idx >= displayItems.length) {
     return (
-      <div className="app flex items-center justify-center p-8">
+      <div className="flex items-center justify-center p-8 h-full" style={{ animation: 'smoothFadeIn 0.3s ease-out forwards' }}>
         <div className="card text-center w-full py-12">
           <h2>All caught up! 🎉</h2>
           <p className="text-muted mt-2">No more receipts to review.</p>
@@ -48,9 +48,8 @@ export default function ReviewView({ items }) {
   }
 
   return (
-    <div className="app">
-      <section className="screen active" id="swipe">
-        <div className="top">
+    <section className="screen active" id="swipe" style={{ animation: 'smoothFadeIn 0.3s ease-out forwards' }}>
+      <div className="top">
           <div>
             <div className="eyebrow">Make it honest</div>
             <h2>Worth it or regret?</h2>
@@ -88,7 +87,6 @@ export default function ReviewView({ items }) {
           <button className="round no" onClick={() => handleSwipe(false)}>←</button>
           <button className="round yes" onClick={() => handleSwipe(true)}>→</button>
         </div>
-      </section>
-    </div>
+    </section>
   )
 }

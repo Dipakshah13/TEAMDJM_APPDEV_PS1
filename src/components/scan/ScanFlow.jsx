@@ -14,9 +14,9 @@ export default function ScanFlow() {
   }
 
   return (
-    <div className="app">
+    <>
       {step === 'scan' && (
-        <section className="screen active" id="scan">
+        <section className="screen active" id="scan" style={{ animation: 'smoothFadeIn 0.3s ease-out forwards' }}>
           <div className="scan-head">
             <button className="back" onClick={() => router.push('/')}>‹</button>
             <div>
@@ -42,7 +42,7 @@ export default function ScanFlow() {
       )}
 
       {step === 'confirm' && (
-        <section className="screen active" id="confirm">
+        <section className="screen active" id="confirm" style={{ animation: 'smoothFadeIn 0.3s ease-out forwards' }}>
           <div className="scan-head">
             <button className="back" onClick={() => setStep('scan')}>‹</button>
             <div>
@@ -79,6 +79,6 @@ export default function ScanFlow() {
           </div>
         </section>
       )}
-    </div>
+    </>
   )
 }

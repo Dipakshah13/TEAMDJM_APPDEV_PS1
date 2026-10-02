@@ -7,8 +7,7 @@ export default function HomeView({ settings, items, recentReceipts, today }) {
   // with some dynamic data plugged in.
   
   return (
-    <div className="app">
-      <section className="screen active" id="home">
+    <section className="screen active" id="home" style={{ animation: 'smoothFadeIn 0.3s ease-out forwards' }}>
         <div className="top">
           <div className="brand">penny.</div>
           <div className="avatar">JS</div>
@@ -73,7 +72,6 @@ export default function HomeView({ settings, items, recentReceipts, today }) {
           <h2 style={{ color: '#fff', marginTop: '5px' }}>Sprout is doing okay.</h2>
           <p>Keep today's spend under <strong>₹1,240</strong> and Sprout gets a little bigger.</p>
         </div>
-      </section>
-    </div>
+    </section>
   )
 }

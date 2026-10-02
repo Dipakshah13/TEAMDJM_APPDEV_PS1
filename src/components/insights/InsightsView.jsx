@@ -6,9 +6,8 @@ export default function InsightsView({ settings, items, today }) {
   const [tab, setTab] = useState('leaks')
 
   return (
-    <div className="app">
-      <section className="screen active" id="insights">
-        <div className="top">
+    <section className="screen active" id="insights" style={{ animation: 'smoothFadeIn 0.3s ease-out forwards' }}>
+      <div className="top">
           <div>
             <div className="eyebrow">Money patterns</div>
             <h2>Insights</h2>
@@ -80,7 +79,6 @@ export default function InsightsView({ settings, items, today }) {
             </div>
           </>
         )}
-      </section>
-    </div>
+    </section>
   )
 }

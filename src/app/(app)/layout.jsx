@@ -24,11 +24,11 @@ export default async function AppLayout({ children }) {
     .single()
 
   return (
-    <div className="flex flex-col min-h-dvh" style={{ background: 'var(--bg)' }}>
-      <main className="flex-1 overflow-y-auto pb-safe">
+    <div style={{ background: '#e8e8e1', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <div className="app">
         {children}
-      </main>
-      <BottomNav />
+        <BottomNav />
+      </div>
     </div>
   )
 }
