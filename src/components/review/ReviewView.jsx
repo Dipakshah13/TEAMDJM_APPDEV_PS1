@@ -29,8 +29,22 @@ export default function ReviewView({ items }) {
 
   const currentItem = displayItems[idx]
 
-  const handleSwipe = (isWorthIt) => {
+  const handleSwipe = async (isWorthIt) => {
+    // Show animation immediately
     setSwipeState(isWorthIt ? 'right' : 'left')
+    
+    // Call server action in background if this is a real item with an ID
+    if (currentItem.id) {
+      // Import dynamically to avoid client component issues if needed, but it's safe to import at top usually.
+      // We'll import it at the top of the file in the next step.
+      try {
+        const { submitReview } = await import('@/features/review/actions')
+        submitReview(currentItem.id, isWorthIt)
+      } catch (err) {
+        console.error('Failed to submit review:', err)
+      }
+    }
+
     setTimeout(() => {
       setIdx(prev => prev + 1)
       setSwipeState(null)
