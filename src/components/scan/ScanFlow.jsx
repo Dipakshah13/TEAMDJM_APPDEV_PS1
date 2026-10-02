@@ -1,9 +1,10 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { saveReceipt } from '@/features/scan/actions'
 import { compressReceiptImage } from '@/lib/image'
+import { getRoast } from '@/lib/roast'
 import { Loader2 } from 'lucide-react'
 
 export default function ScanFlow() {
@@ -15,6 +16,27 @@ export default function ScanFlow() {
   const [items, setItems] = useState([])
   const [total, setTotal] = useState(0)
   
+  // Memoize roast so it doesn't flicker on every keystroke
+  const roastMessage = useMemo(() => {
+    if (!extractedData || !extractedData.store) return null
+    
+    // Find highest priced item
+    let topItem = 'that item'
+    if (items.length > 0) {
+      const highest = items.reduce((prev, current) => (prev.price > current.price) ? prev : current)
+      topItem = highest.name || 'that item'
+    }
+    
+    return getRoast({
+      store: extractedData.store,
+      topItem: topItem,
+      itemCount: items.length,
+      category: items[0]?.category || 'misc',
+      total: total,
+      regretCount: 0 // We don't have regrets yet for a new bill
+    }, 'roast')
+  }, [extractedData?.store, items.length, total])
+
   const handleFileChange = async (e) => {
     if (e.target.files?.length > 0) {
       setStep('confirm')
@@ -57,6 +79,18 @@ export default function ScanFlow() {
       reader.readAsDataURL(compressedFile)
     }
   }
+  
+  const handleManualEntry = () => {
+    setStep('confirm')
+    setExtractedData({
+      store: '',
+      date: new Date().toISOString().split('T')[0],
+      time: '12:00',
+      confidence: 1
+    })
+    setItems([{ name: '', category: 'food', price: 0 }])
+    setTotal(0)
+  }
 
   const handleItemChange = (index, field, value) => {
     const newItems = [...items]
@@ -67,9 +101,12 @@ export default function ScanFlow() {
     }
     setItems(newItems)
     
-    // Recalculate total
     const newTotal = newItems.reduce((acc, curr) => acc + (curr.price || 0), 0)
     setTotal(newTotal)
+  }
+  
+  const handleAddItem = () => {
+    setItems([...items, { name: '', category: 'misc', price: 0 }])
   }
 
   const handleConfirm = async () => {
@@ -121,6 +158,14 @@ export default function ScanFlow() {
           <input accept="image/*" capture="environment" id="camera" type="file" onChange={handleFileChange} style={{ display: 'none' }} />
           <input accept="image/*,.pdf" id="file" type="file" onChange={handleFileChange} style={{ display: 'none' }} />
           
+          <button 
+            className="secondary mt" 
+            onClick={handleManualEntry}
+            style={{ width: '100%', padding: '16px', background: 'transparent', border: '1px solid var(--line)', color: 'var(--ink)', borderRadius: '12px', fontWeight: 600, cursor: 'pointer' }}
+          >
+            ⌨️ Type manually instead
+          </button>
+          
           <div className="card" style={{ padding: '16px', marginTop: '14px' }}>
             <b>✨ Tip</b>
             <div className="mini" style={{ marginTop: '5px' }}>Place the whole receipt inside the frame and avoid glare.</div>
@@ -166,11 +211,22 @@ export default function ScanFlow() {
                         onChange={(e) => setExtractedData({...extractedData, date: e.target.value})}
                         style={{ background: 'transparent', border: 'none', color: '#888' }}
                       />
-                      <span>· {extractedData?.time || ''}</span>
+                      <input 
+                        type="time"
+                        value={extractedData?.time || ''}
+                        onChange={(e) => setExtractedData({...extractedData, time: e.target.value})}
+                        style={{ background: 'transparent', border: 'none', color: '#888', width: '80px' }}
+                      />
                     </div>
                   </div>
                   <span className="tag">{Math.round((extractedData?.confidence || 1) * 100)}% confident</span>
                 </div>
+                
+                {roastMessage && extractedData?.store && (
+                  <div style={{ background: 'linear-gradient(135deg, rgba(255,107,107,0.1), rgba(255,142,83,0.1))', padding: '12px 16px', borderRadius: '8px', borderLeft: '3px solid #ff6b6b', marginBottom: '16px', fontSize: '13px', fontStyle: 'italic', color: '#ffc9c9' }}>
+                    🔥 "{roastMessage}"
+                  </div>
+                )}
                 
                 <div id="editRows" style={{ maxHeight: '300px', overflowY: 'auto' }}>
                   {items.map((item, i) => (
@@ -178,10 +234,12 @@ export default function ScanFlow() {
                       <input 
                         style={{ width: '40%', fontSize: '12px', fontWeight: 750, background: 'transparent', border: 'none', color: '#fff' }} 
                         value={item.name} 
+                        placeholder="Item name"
                         onChange={(e) => handleItemChange(i, 'name', e.target.value)}
                       />
                       <input 
                         value={item.category} 
+                        placeholder="Category"
                         onChange={(e) => handleItemChange(i, 'category', e.target.value)}
                       />
                       <input 
@@ -193,7 +251,11 @@ export default function ScanFlow() {
                   ))}
                 </div>
                 
-                <div className="row" style={{ paddingTop: '12px', borderTop: '1px solid var(--line)' }}>
+                <button onClick={handleAddItem} style={{ width: '100%', padding: '8px', background: 'transparent', color: '#a9df62', border: '1px dashed #a9df62', borderRadius: '6px', fontSize: '12px', marginTop: '8px', cursor: 'pointer' }}>
+                  + Add another item
+                </button>
+                
+                <div className="row" style={{ paddingTop: '12px', borderTop: '1px solid var(--line)', marginTop: '16px' }}>
                   <b>Total</b>
                   <b>₹{total}</b>
                 </div>
@@ -202,7 +264,7 @@ export default function ScanFlow() {
                   className="primary save" 
                   onClick={handleConfirm}
                   disabled={loading}
-                  style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}
+                  style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', marginTop: '16px' }}
                 >
                   {loading && <Loader2 size={18} className="animate-spin" />}
                   Confirm &amp; save
