@@ -16,6 +16,28 @@ export default function SettingsView({ profile, settings }) {
         </div>
         <div className="card" style={{ padding: '16px', marginTop: '20px' }}>
           <p className="mini">Coming soon.</p>
+          <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <button 
+              className="btn primary" 
+              onClick={async () => {
+                const { seedDemoData } = await import('@/features/demo/actions')
+                await seedDemoData()
+                alert('Demo data seeded! Check the Home and Insights tabs.')
+              }}
+            >
+              Seed Demo Data
+            </button>
+            <button 
+              className="btn secondary outline" 
+              onClick={async () => {
+                const { resetUserData } = await import('@/features/demo/actions')
+                await resetUserData(false)
+                alert('All data reset!')
+              }}
+            >
+              Reset All Data
+            </button>
+          </div>
         </div>
     </section>
   )
