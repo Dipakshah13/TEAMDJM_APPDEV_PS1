@@ -16,7 +16,7 @@ export default function SettingsView({ profile, settings }) {
   }
 
   return (
-    <section className="screen active" style={{ animation: 'smoothFadeIn 0.3s ease-out forwards' }}>
+    <section className="screen active" style={{ animation: 'smoothFadeIn 0.3s ease-out forwards', paddingBottom: '130px' }}>
       <div className="scan-head">
         <button className="back" onClick={() => router.back()}>‹</button>
         <div>
@@ -25,12 +25,12 @@ export default function SettingsView({ profile, settings }) {
         </div>
       </div>
 
-      <div className="top" style={{ marginTop: '20px' }}>
-        <div className="avatar" style={{ transform: 'scale(1.5)', transformOrigin: 'left' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '20px', padding: '10px 20px 0' }}>
+        <div className="avatar" style={{ transform: 'scale(1.5)', transformOrigin: 'center' }}>
           {profile?.display_name ? profile.display_name[0].toUpperCase() : 'JS'}
         </div>
-        <div style={{ marginLeft: '30px' }}>
-          <h2 style={{ fontSize: '24px', letterSpacing: '-1px' }}>{profile?.display_name || 'Shubham S.'}</h2>
+        <div>
+          <h2 style={{ fontSize: '24px', letterSpacing: '-1px' }}>{profile?.display_name || 'Jay Shinde'}</h2>
           <div className="eyebrow" style={{ color: '#52623d' }}>{profile?.email || 'shubham@example.com'}</div>
         </div>
       </div>
