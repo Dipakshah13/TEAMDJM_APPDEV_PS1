@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { saveReceipt } from '@/features/scan/actions'
+import { compressReceiptImage } from '@/lib/image'
 import { Loader2 } from 'lucide-react'
 
 export default function ScanFlow() {
@@ -21,6 +22,14 @@ export default function ScanFlow() {
       setError(null)
       
       const file = e.target.files[0]
+      let compressedFile
+      try {
+        compressedFile = await compressReceiptImage(file)
+      } catch (err) {
+        setError(err.message)
+        setLoading(false)
+        return
+      }
       
       const reader = new FileReader()
       reader.onload = async (event) => {
@@ -30,7 +39,7 @@ export default function ScanFlow() {
           const res = await fetch('/api/extract', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ imageBase64: base64, mediaType: file.type })
+            body: JSON.stringify({ imageBase64: base64, mediaType: compressedFile.type })
           })
           
           const json = await res.json()
@@ -45,7 +54,7 @@ export default function ScanFlow() {
           setLoading(false)
         }
       }
-      reader.readAsDataURL(file)
+      reader.readAsDataURL(compressedFile)
     }
   }
 
@@ -134,9 +143,22 @@ export default function ScanFlow() {
             ) : (
               <>
                 <div className="receipt-top row">
-                  <div>
-                    <b>{extractedData?.store || 'Unknown Store'}</b>
-                    <div className="mini">{extractedData?.date || 'Today'} · {extractedData?.time || ''}</div>
+                  <div style={{ flex: 1 }}>
+                    <input 
+                      value={extractedData?.store || ''} 
+                      onChange={(e) => setExtractedData({...extractedData, store: e.target.value})}
+                      style={{ background: 'transparent', border: 'none', color: '#fff', fontWeight: 'bold', width: '100%', marginBottom: '4px' }}
+                      placeholder="Store Name"
+                    />
+                    <div className="mini" style={{ display: 'flex', gap: '8px' }}>
+                      <input 
+                        type="date"
+                        value={extractedData?.date || ''}
+                        onChange={(e) => setExtractedData({...extractedData, date: e.target.value})}
+                        style={{ background: 'transparent', border: 'none', color: '#888' }}
+                      />
+                      <span>· {extractedData?.time || ''}</span>
+                    </div>
                   </div>
                   <span className="tag">{Math.round((extractedData?.confidence || 1) * 100)}% confident</span>
                 </div>

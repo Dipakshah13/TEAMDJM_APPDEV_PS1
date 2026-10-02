@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { istDayString, buildTimestamp } from '@/lib/dates'
 
 /**
  * Save an extracted receipt to the database.
@@ -20,12 +21,12 @@ export async function saveReceipt(data, source = 'scan') {
 
     // Prepare payload for the save_receipt RPC function
     // Date formatting: If date isn't provided, use today's date
-    const todayStr = new Date().toISOString().split('T')[0]
+    const todayStr = istDayString()
     const receiptDate = data.date || todayStr
     const receiptTime = data.time || '12:00' // Default to noon if no time
 
-    // Combine date and time to ISO string for timestamptz
-    const purchasedAt = new Date(`${receiptDate}T${receiptTime}:00`).toISOString()
+    // Combine date and time to ISO string for timestamptz securely using timezone lib
+    const purchasedAt = buildTimestamp(receiptDate, receiptTime)
 
     const payload = {
       store: data.store || 'Unknown Store',
