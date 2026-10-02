@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'BillBuddy',
   webDir: 'out',
   server: {
-    url: 'http://10.0.2.2:3000', // For local Android emulator testing. Replace with production URL when live.
+    url: 'http://192.168.0.117:3000', // Your computer's local Wi-Fi IP Address
     cleartext: true
   }
 };
