@@ -2,36 +2,11 @@
 
 import React, { useState, useMemo } from 'react'
 
-export default function InsightsView({ settings, items, today }) {
+export default function InsightsView({ settings, items, computedLeaks, computedRepeats, computedSmalls, today }) {
   const [tab, setTab] = useState('leaks')
 
-  // Calculate insights from raw item data
+  // Calculate generic insights from raw item data (categories, trends)
   const insights = useMemo(() => {
-    const counts = {}
-    items.forEach(item => {
-      const key = item.normalized_name || item.name.toLowerCase().trim()
-      if (!counts[key]) {
-        counts[key] = { 
-          name: item.name, 
-          count: 0, 
-          total: 0, 
-          category: item.category 
-        }
-      }
-      counts[key].count += 1
-      counts[key].total += item.price
-    })
-
-    // Leaks = bought more than 3 times
-    const leaks = Object.values(counts)
-      .filter(x => x.count >= 3)
-      .sort((a, b) => b.total - a.total)
-
-    // Repeats = bought more than 1 time
-    const repeats = Object.values(counts)
-      .filter(x => x.count > 1 && x.count < 3)
-      .sort((a, b) => b.count - a.count)
-
     // Category breakdown
     const catTotals = {}
     let grandTotal = 0
@@ -76,7 +51,7 @@ export default function InsightsView({ settings, items, today }) {
     // Average daily spend (assuming 30 days window)
     const avgDaily = Math.round(grandTotal / 30)
 
-    return { leaks, repeats, categories, avgDaily, biggestItem, busiestDay, grandTotal }
+    return { categories, avgDaily, biggestItem, busiestDay, grandTotal }
   }, [items])
 
   const getEmoji = (cat) => {
@@ -111,28 +86,28 @@ export default function InsightsView({ settings, items, today }) {
                 <span className="link">HIGH FREQUENCY</span>
               </div>
               
-              {insights.leaks.length === 0 && (
+              {computedLeaks.leaks.length === 0 && (
                 <p style={{ opacity: 0.7, fontSize: '13px', textAlign: 'center', margin: '20px 0' }}>
                   No major spending leaks found yet! Keep scanning.
                 </p>
               )}
               
-              {insights.leaks.map((leak, i) => (
+              {computedLeaks.leaks.map((leak, i) => (
                 <div className="leak" key={i}>
-                  <div className="bubble">{getEmoji(leak.category)}</div>
+                  <div className="bubble">{getEmoji('other')}</div>
                   <div>
                     <b style={{ textTransform: 'capitalize' }}>{leak.name}</b>
-                    <div className="mini">{leak.count} purchases · ₹{leak.total}</div>
+                    <div className="mini">{leak.count} purchases · ₹{leak.leakAmount}</div>
                   </div>
-                  <div className="amount">₹{leak.total}</div>
+                  <div className="amount">₹{leak.leakAmount}</div>
                 </div>
               ))}
             </div>
             
-            {insights.leaks.length > 0 && (
+            {computedLeaks.whatIfText && (
               <div className="card alert mt">
-                <strong>Cut out {insights.leaks[0]?.name} for a week!</strong>
-                <p>That&apos;s ₹{insights.leaks[0]?.total} you can redirect without changing your essentials.</p>
+                <strong>Cut out {computedLeaks.leaks[0]?.name} for a week!</strong>
+                <p>{computedLeaks.whatIfText}</p>
               </div>
             )}
             
@@ -140,15 +115,15 @@ export default function InsightsView({ settings, items, today }) {
               <h2>Repeat purchases</h2>
             </div>
             
-            {insights.repeats.length === 0 && (
+            {computedRepeats.length === 0 && (
               <div className="card" style={{ padding: '16px', textAlign: 'center', opacity: 0.7 }}>
                 No repeat purchases detected.
               </div>
             )}
 
-            {insights.repeats.map((repeat, i) => (
+            {computedRepeats.map((repeat, i) => (
               <div className="card item" key={i}>
-                <div className="ico">{getEmoji(repeat.category)}</div>
+                <div className="ico">{getEmoji(repeat.category || 'other')}</div>
                 <div>
                   <div className="name" style={{ textTransform: 'capitalize' }}>{repeat.name}</div>
                   <div className="cat">{repeat.count} times recently</div>
@@ -156,6 +131,24 @@ export default function InsightsView({ settings, items, today }) {
                 <span className="tag">REPEAT</span>
               </div>
             ))}
+            
+            {computedSmalls.length > 0 && (
+              <>
+                <div className="section-title">
+                  <h2>Small Spend Leaks</h2>
+                </div>
+                {computedSmalls.map((small, i) => (
+                  <div className="card item" key={`small-${i}`}>
+                    <div className="ico">{getEmoji(small.category || 'other')}</div>
+                    <div>
+                      <div className="name" style={{ textTransform: 'capitalize' }}>{small.category}</div>
+                      <div className="cat">{small.percentage}% of category is micro-spends</div>
+                    </div>
+                    <span className="tag">₹{small.smallSpend}</span>
+                  </div>
+                ))}
+              </>
+            )}
           </>
         )}
 

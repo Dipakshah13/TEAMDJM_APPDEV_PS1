@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { istDayString, monthStartUTC } from '@/lib/dates'
+import { monthSpent, safeToSpend, forecast, sproutState } from '@/lib/insights'
 import HomeView from '@/components/home/HomeView'
 
 export const metadata = { title: 'Home' }
@@ -40,11 +41,26 @@ export default async function HomePage() {
     .order('purchased_at', { ascending: false })
     .limit(5)
 
+  const budget = settings?.monthly_budget || 20000
+  const spent = monthSpent(items ?? [])
+  const safe = safeToSpend(spent, budget, today)
+  const fc = forecast(spent, budget, today)
+  const { state: sState, message: sMessage } = sproutState(fc.burnRate)
+
+  const insights = {
+    budget,
+    spent,
+    safe,
+    forecast: fc,
+    sprout: { state: sState, message: sMessage }
+  }
+
   return (
     <HomeView
       settings={settings}
       items={items ?? []}
       recentReceipts={recentReceipts ?? []}
+      insights={insights}
       today={today}
     />
   )

@@ -53,6 +53,15 @@ export default function SettingsView({ profile, settings }) {
     setIsSaving(false)
   }
 
+  const [tone, setTone] = useState(settings?.tone || 'roast')
+  const [budget, setBudget] = useState(settings?.monthly_budget || 20000)
+  const [currency, setCurrency] = useState('INR')
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCurrency(localStorage.getItem('billbuddy_currency') || 'INR')
+  }, [])
+
   const toggleTheme = () => {
     const nextTheme = theme === 'Auto' ? 'Dark' : theme === 'Dark' ? 'Light' : 'Auto'
     setTheme(nextTheme)
@@ -62,10 +71,36 @@ export default function SettingsView({ profile, settings }) {
     } else if (nextTheme === 'Light') {
       document.body.classList.remove('dark-theme')
     } else {
-      // Auto - default to light or dark based on system in a real app,
-      // here we'll just clear the explicit class
       document.body.classList.remove('dark-theme')
     }
+  }
+
+  const handleSaveSettings = async () => {
+    setIsSaving(true)
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    
+    if (user) {
+      const { error: pError } = await supabase
+        .from('profiles')
+        .update({ display_name: name })
+        .eq('id', user.id)
+
+      const { error: sError } = await supabase
+        .from('user_settings')
+        .update({ tone, monthly_budget: budget })
+        .eq('user_id', user.id)
+        
+      if (!pError && !sError) {
+        showToast('Settings saved successfully!')
+        localStorage.setItem('billbuddy_currency', currency)
+        setActiveView('main')
+        router.refresh()
+      } else {
+        showToast('Error saving settings')
+      }
+    }
+    setIsSaving(false)
   }
 
   if (activeView === 'edit_profile') {
@@ -87,9 +122,38 @@ export default function SettingsView({ profile, settings }) {
               onChange={(e) => setName(e.target.value)} 
               style={{ width: '100%', padding: '12px', marginTop: '8px', borderRadius: '10px', border: '1px solid var(--line)', background: 'transparent', color: 'var(--ink)', fontSize: '16px' }}
             />
+            <label style={{ fontSize: '12px', fontWeight: 800, color: '#777', textTransform: 'uppercase', marginTop: '16px', display: 'block' }}>Monthly Budget</label>
+            <input 
+              type="number" 
+              value={budget} 
+              onChange={(e) => setBudget(Number(e.target.value))} 
+              style={{ width: '100%', padding: '12px', marginTop: '8px', borderRadius: '10px', border: '1px solid var(--line)', background: 'transparent', color: 'var(--ink)', fontSize: '16px' }}
+            />
+            
+            <label style={{ fontSize: '12px', fontWeight: 800, color: '#777', textTransform: 'uppercase', marginTop: '16px', display: 'block' }}>Coach Tone</label>
+            <select 
+              value={tone}
+              onChange={(e) => setTone(e.target.value)}
+              style={{ width: '100%', padding: '12px', marginTop: '8px', borderRadius: '10px', border: '1px solid var(--line)', background: 'transparent', color: 'var(--ink)', fontSize: '16px' }}
+            >
+              <option value="roast">Roast Mode 🔥 (Savage)</option>
+              <option value="gentle">Gentle Mode 🌸 (Polite)</option>
+            </select>
+            
+            <label style={{ fontSize: '12px', fontWeight: 800, color: '#777', textTransform: 'uppercase', marginTop: '16px', display: 'block' }}>Currency</label>
+            <select 
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value)}
+              style={{ width: '100%', padding: '12px', marginTop: '8px', borderRadius: '10px', border: '1px solid var(--line)', background: 'transparent', color: 'var(--ink)', fontSize: '16px' }}
+            >
+              <option value="INR">₹ INR</option>
+              <option value="USD">$ USD</option>
+              <option value="EUR">€ EUR</option>
+            </select>
+            
             <button 
-              onClick={handleSaveProfile}
-              style={{ width: '100%', padding: '14px', marginTop: '20px', borderRadius: '12px', background: 'var(--ink)', color: 'var(--bg)', fontWeight: 'bold', fontSize: '16px', border: 'none', cursor: 'pointer' }}
+              onClick={handleSaveSettings}
+              style={{ width: '100%', padding: '14px', marginTop: '24px', borderRadius: '12px', background: 'var(--ink)', color: 'var(--bg)', fontWeight: 'bold', fontSize: '16px', border: 'none', cursor: 'pointer' }}
             >
               {isSaving ? 'Saving...' : 'Save Changes'}
             </button>
