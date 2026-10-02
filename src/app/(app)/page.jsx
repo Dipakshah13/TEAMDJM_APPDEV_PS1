@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { todayIST } from '@/lib/dates'
+import { istDayString, monthStartUTC } from '@/lib/dates'
 import HomeView from '@/components/home/HomeView'
 
 export const metadata = { title: 'Home' }
@@ -22,8 +22,8 @@ export default async function HomePage() {
     .single()
 
   // Fetch current month items
-  const today = todayIST()
-  const monthStart = new Date(today.getFullYear(), today.getMonth(), 1).toISOString()
+  const today = istDayString()
+  const monthStart = monthStartUTC(today).toISOString()
 
   const { data: items } = await supabase
     .from('receipt_items')
@@ -45,7 +45,7 @@ export default async function HomePage() {
       settings={settings}
       items={items ?? []}
       recentReceipts={recentReceipts ?? []}
-      today={today.toISOString()}
+      today={today}
     />
   )
 }

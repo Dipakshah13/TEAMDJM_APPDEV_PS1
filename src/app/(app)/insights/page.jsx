@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { todayIST } from '@/lib/dates'
+import { istDayString, daysAgoUTC } from '@/lib/dates'
 import InsightsView from '@/components/insights/InsightsView'
 
 export const metadata = { title: 'Insights' }
@@ -8,9 +8,8 @@ export default async function InsightsPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  const today = todayIST()
-  const windowStart = new Date(today)
-  windowStart.setDate(windowStart.getDate() - 60)
+  const today = istDayString()
+  const windowStart = daysAgoUTC(60, today)
 
   const { data: settings } = await supabase
     .from('user_settings')
@@ -29,7 +28,7 @@ export default async function InsightsPage() {
     <InsightsView
       settings={settings}
       items={items ?? []}
-      today={today.toISOString()}
+      today={today}
     />
   )
 }
