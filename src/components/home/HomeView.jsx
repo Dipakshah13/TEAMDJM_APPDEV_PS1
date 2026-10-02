@@ -41,33 +41,24 @@ export default function HomeView({ settings, items, recentReceipts, today }) {
           <span className="link" onClick={() => router.push('/history')} style={{ cursor: 'pointer' }}>SEE ALL</span>
         </div>
         
-        {/* Iterate over items or use static for now */}
-        <div className="card item">
-          <div className="ico">☕</div>
-          <div>
-            <div className="name">Cold Coffee</div>
-            <div className="cat">Food &amp; drinks · today</div>
+        {items.length === 0 ? (
+          <div className="card" style={{ padding: '16px', textAlign: 'center', opacity: 0.7 }}>
+            No recent spends yet. Scan a receipt!
           </div>
-          <div className="price">₹180</div>
-        </div>
-        
-        <div className="card item">
-          <div className="ico">🛒</div>
-          <div>
-            <div className="name">Oats + Bananas</div>
-            <div className="cat">Groceries · yesterday</div>
-          </div>
-          <div className="price">₹265</div>
-        </div>
-        
-        <div className="card item">
-          <div className="ico">🚕</div>
-          <div>
-            <div className="name">Uber</div>
-            <div className="cat">Transport · yesterday</div>
-          </div>
-          <div className="price">₹214</div>
-        </div>
+        ) : (
+          items.slice(0, 5).map((item) => (
+            <div className="card item" key={item.id}>
+              <div className="ico">{item.category === 'food' ? '🍔' : item.category === 'transport' ? '🚕' : item.category === 'groceries' ? '🛒' : '🧾'}</div>
+              <div>
+                <div className="name">{item.name}</div>
+                <div className="cat" style={{ textTransform: 'capitalize' }}>
+                  {item.category || 'Other'} · {new Date(item.purchased_at).toLocaleDateString(undefined, { weekday: 'short' })}
+                </div>
+              </div>
+              <div className="price">₹{item.price}</div>
+            </div>
+          ))
+        )}
         
         <div className="card pet mt">
           <div className="eyebrow" style={{ color: '#a9df62' }}>Your budget pet</div>

@@ -2,14 +2,78 @@
 
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { saveReceipt } from '@/features/scan/actions'
+import { Loader2 } from 'lucide-react'
 
 export default function ScanFlow() {
   const router = useRouter()
   const [step, setStep] = useState('scan')
-
-  const handleFileChange = (e) => {
+  const [loading, setLoading] = useState(false)
+  const [extractedData, setExtractedData] = useState(null)
+  const [error, setError] = useState(null)
+  const [items, setItems] = useState([])
+  const [total, setTotal] = useState(0)
+  
+  const handleFileChange = async (e) => {
     if (e.target.files?.length > 0) {
       setStep('confirm')
+      setLoading(true)
+      setError(null)
+      
+      const file = e.target.files[0]
+      const formData = new FormData()
+      formData.append('receipt', file)
+
+      try {
+        const res = await fetch('/api/extract', {
+          method: 'POST',
+          body: formData
+        })
+        
+        const json = await res.json()
+        if (!res.ok) throw new Error(json.error || 'Failed to extract')
+        
+        setExtractedData(json.data)
+        setItems(json.data.items || [])
+        setTotal(json.data.total || 0)
+      } catch (err) {
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+  }
+
+  const handleItemChange = (index, field, value) => {
+    const newItems = [...items]
+    if (field === 'price') {
+      newItems[index][field] = parseFloat(value.replace(/[^0-9.]/g, '')) || 0
+    } else {
+      newItems[index][field] = value
+    }
+    setItems(newItems)
+    
+    // Recalculate total
+    const newTotal = newItems.reduce((acc, curr) => acc + (curr.price || 0), 0)
+    setTotal(newTotal)
+  }
+
+  const handleConfirm = async () => {
+    setLoading(true)
+    const finalData = {
+      ...extractedData,
+      items,
+      total
+    }
+    
+    const result = await saveReceipt(finalData)
+    setLoading(false)
+    
+    if (result.success) {
+      router.push('/')
+      router.refresh()
+    } else {
+      setError(result.error)
     }
   }
 
@@ -52,30 +116,63 @@ export default function ScanFlow() {
           </div>
           
           <div className="card confirm-card">
-            <div className="receipt-top row">
-              <div>
-                <b>FreshMart</b>
-                <div className="mini">Today · 6:42 PM</div>
+            {loading && !extractedData ? (
+              <div style={{ padding: '40px 0', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+                <Loader2 size={32} className="animate-spin text-mint" />
+                <p style={{ color: '#fff' }}>Analyzing receipt...</p>
               </div>
-              <span className="tag">94% confident</span>
-            </div>
-            
-            <div id="editRows">
-              {[['Oats','Groceries','₹220'],['Bananas','Groceries','₹95'],['Protein Bar','Snacks','₹120'],['Cold Coffee','Food & drinks','₹180'],['Soap','Household','₹230']].map((x, i) => (
-                <div className="edit-row" key={i}>
-                  <div style={{ width: '33%', fontSize: '12px', fontWeight: 750 }}>{x[0]}</div>
-                  <input defaultValue={x[1]} />
-                  <input defaultValue={x[2]} style={{ maxWidth: '75px' }} />
+            ) : error ? (
+              <div style={{ padding: '20px 0', textAlign: 'center', color: '#ff6b6b' }}>
+                <p>⚠️ {error}</p>
+                <button className="primary mt" onClick={() => setStep('scan')}>Try again</button>
+              </div>
+            ) : (
+              <>
+                <div className="receipt-top row">
+                  <div>
+                    <b>{extractedData?.store || 'Unknown Store'}</b>
+                    <div className="mini">{extractedData?.date || 'Today'} · {extractedData?.time || ''}</div>
+                  </div>
+                  <span className="tag">{Math.round((extractedData?.confidence || 1) * 100)}% confident</span>
                 </div>
-              ))}
-            </div>
-            
-            <div className="row" style={{ paddingTop: '12px', borderTop: '1px solid var(--line)' }}>
-              <b>Total</b>
-              <b>₹845</b>
-            </div>
-            
-            <button className="primary save" onClick={() => router.push('/review')}>Confirm &amp; review</button>
+                
+                <div id="editRows" style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                  {items.map((item, i) => (
+                    <div className="edit-row" key={i}>
+                      <input 
+                        style={{ width: '40%', fontSize: '12px', fontWeight: 750, background: 'transparent', border: 'none', color: '#fff' }} 
+                        value={item.name} 
+                        onChange={(e) => handleItemChange(i, 'name', e.target.value)}
+                      />
+                      <input 
+                        value={item.category} 
+                        onChange={(e) => handleItemChange(i, 'category', e.target.value)}
+                      />
+                      <input 
+                        value={`₹${item.price}`} 
+                        onChange={(e) => handleItemChange(i, 'price', e.target.value)}
+                        style={{ maxWidth: '75px', textAlign: 'right' }} 
+                      />
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="row" style={{ paddingTop: '12px', borderTop: '1px solid var(--line)' }}>
+                  <b>Total</b>
+                  <b>₹{total}</b>
+                </div>
+                
+                <button 
+                  className="primary save" 
+                  onClick={handleConfirm}
+                  disabled={loading}
+                  style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}
+                >
+                  {loading && <Loader2 size={18} className="animate-spin" />}
+                  Confirm &amp; save
+                </button>
+              </>
+            )}
           </div>
         </section>
       )}
