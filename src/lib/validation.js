@@ -6,7 +6,7 @@ const ExpenseCategorySchema = z.enum(CATEGORIES)
 
 export const ReceiptItemSchema = z.object({
   name: z.string().min(1, 'Item name is required'),
-  normalized_name: z.string().min(1, 'Normalized name is required'),
+  normalized_name: z.string().optional(),
   price: z.number().min(0, 'Price must be non-negative'),
   category: ExpenseCategorySchema.default('other'),
   regret: z.boolean().nullable().optional(),
@@ -15,8 +15,9 @@ export const ReceiptItemSchema = z.object({
 
 export const ExtractedReceiptSchema = z.object({
   store: z.string().default('Unknown Store'),
-  date: z.string().nullable().optional(), // Expected format: YYYY-MM-DD
-  time: z.string().nullable().optional(), // Expected format: HH:mm
+  date: z.string().nullable().optional(),
+  purchased_at: z.string().nullable().optional(), // allow Claude to output this
+  time: z.string().nullable().optional(),
   total: z.number().nullable().optional(),
   confidence: z.number().min(0).max(1).default(1),
   items: z.array(ReceiptItemSchema).default([]),
