@@ -6,9 +6,7 @@ import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { Loader2, Mail, ArrowRight, Sparkles } from 'lucide-react'
 
-export const metadata = {
-  title: 'Sign In',
-}
+
 
 export default function LoginPage() {
   const router = useRouter()

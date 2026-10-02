@@ -1,11 +1,10 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import BottomNav from '@/components/layout/BottomNav'
-import TopBar from '@/components/layout/TopBar'
 
 /**
  * Signed-in app shell layout.
- * Wraps all protected routes with top bar + bottom nav.
+ * Wraps all protected routes with bottom nav.
  */
 export default async function AppLayout({ children }) {
   const supabase = await createClient()
@@ -25,8 +24,7 @@ export default async function AppLayout({ children }) {
     .single()
 
   return (
-    <div className="flex flex-col min-h-dvh bg-cream">
-      <TopBar profile={profile} />
+    <div className="flex flex-col min-h-dvh" style={{ background: 'var(--bg)' }}>
       <main className="flex-1 overflow-y-auto pb-safe">
         {children}
       </main>
