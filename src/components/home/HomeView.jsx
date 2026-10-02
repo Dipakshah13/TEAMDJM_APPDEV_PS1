@@ -40,10 +40,10 @@ export default function HomeView({ settings, items, recentReceipts, today }) {
             </div>
             <div>
               <strong style={{ color: '#b34700', fontSize: '15px', lineHeight: '1.2', display: 'block', letterSpacing: '-0.3px' }}>
-                You'll hit your limit by the 19th
+                You&apos;ll hit your limit by the 19th
               </strong>
               <p style={{ color: '#993d00', fontSize: '12.5px', marginTop: '6px', lineHeight: '1.4', opacity: 0.9 }}>
-                You're spending <strong style={{ color: '#cc3300' }}>18% faster</strong> than planned! Try skipping a few small purchases to stretch your budget.
+                You&apos;re spending <strong style={{ color: '#cc3300' }}>18% faster</strong> than planned! Try skipping a few small purchases to stretch your budget.
               </p>
             </div>
           </div>
@@ -76,7 +76,7 @@ export default function HomeView({ settings, items, recentReceipts, today }) {
         <div className="card pet mt">
           <div className="eyebrow" style={{ color: '#a9df62' }}>Your budget pet</div>
           <h2 style={{ color: '#fff', marginTop: '5px' }}>Sprout is doing okay.</h2>
-          <p>Keep today's spend under <strong>₹1,240</strong> and Sprout gets a little bigger.</p>
+          <p>Keep today&apos;s spend under <strong>₹1,240</strong> and Sprout gets a little bigger.</p>
         </div>
     </section>
   )

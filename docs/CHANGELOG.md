@@ -1,24 +1,22 @@
-# CHANGELOG.md — BillBuddy
+# Changelog
 
-All notable features added to this project. Follows [Keep a Changelog](https://keepachangelog.com/).
+All notable changes to this project will be documented in this file.
 
----
+## [Unreleased]
+- **Scan Flow**: Fixed image upload payload (FormData -> JSON Base64).
+- **Review Queue**: Implemented "Avoid Regret" swipe feature wired to database.
+- **Insights**: Added "Trends" tab (Average spend, busiest day, biggest splurge).
+- **Home**: Wired up real database recent spends to replace static placeholders.
+- **Auth**: Perfected login layout and mascot integration.
 
-## [Unreleased] — Phase 0
-
-### Added
-- Next.js 15 App Router scaffold (JavaScript, Tailwind, `src/` dir, `@/` alias)
-- Supabase migration `0001_init.sql`: profiles, user_settings, receipts, receipt_items, extraction_log
-- RLS policies on all tables (own-row-only)
-- DB triggers: `updated_at`, item `purchased_at` sync, auto profile+settings on signup
-- DB functions: `save_receipt()`, `reset_my_data()`, `export_my_data()`
-- `@supabase/ssr` auth: magic link + anonymous guest sign-in
-- `src/middleware.js` — session refresh on every request
-- `lib/money.js` — INR formatting with `Intl.NumberFormat('en-IN')`
-- `lib/dates.js` — IST helpers (toIST, timeBucket, buildTimestamp, etc.)
-- `lib/models.js` — JSDoc typedefs + CATEGORIES constant
-- `lib/flags.js` — feature flag system
-- `lib/insights/engine.js` — pure insight functions (safe-to-spend, forecast, repeats, leaks, Sprout)
-- Route skeleton: login, home, scan, insights, review, history, settings
-- `docs/DECISIONS.md`, `docs/ARCHITECTURE.md`, `docs/CHANGELOG.md`
-- `.env.example`, `.prettierrc`, `vitest.config.js`
+## Not yet built (P1-P11 Roadmap)
+- P1: Supabase RLS hardening and constraints.
+- P2: Dedicated insights engine (`src/lib/insights/`) with tests.
+- P3: True Claude Vision model integration with PDF support and timeouts.
+- P4: Complete multi-step scan flow with receipt editing and validation.
+- P5: Dynamic Sprout pet states and accurate forecasts on the Home screen.
+- P6: Advanced review queue (optimistic updates, undo, drag gestures).
+- P7: Full category donut charts and accurate leaky-bucket analytics.
+- P8: History editing and manual entry features.
+- P9: Complete user settings, onboarding, and robust demo seeding.
+- P10/P11: Full accessibility audit, PWA installability, light theme consistency.

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import Image from 'next/image'
 import { Loader2, Mail, Lock, Camera, Sparkles, BarChart2, Smile, ArrowRight, Eye, EyeOff } from 'lucide-react'
 
 export default function LoginPage() {
@@ -114,9 +115,11 @@ export default function LoginPage() {
 
           {/* Mascot Image - Uses the one I just generated and saved as mascot.jpg! */}
           <div className="relative w-full aspect-square max-w-[280px] flex items-center justify-center my-6">
-            <img 
+            <Image 
               src="/mascot.jpg" 
               alt="BillBuddy Mascot" 
+              width={280}
+              height={280}
               className="w-full h-full object-contain drop-shadow-2xl rounded-3xl"
               style={{ maskImage: 'linear-gradient(to bottom, black 90%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to bottom, black 90%, transparent 100%)' }}
             />

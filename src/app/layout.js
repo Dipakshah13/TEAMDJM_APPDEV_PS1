@@ -26,16 +26,13 @@ export const metadata = {
     siteName: 'BillBuddy',
   },
   manifest: '/manifest.webmanifest',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#1a4731' },
-    { media: '(prefers-color-scheme: dark)', color: '#1a4731' },
-  ],
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-    viewportFit: 'cover',
-  },
+}
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+  themeColor: '#1a4731'
 }
 
 export default function RootLayout({ children }) {

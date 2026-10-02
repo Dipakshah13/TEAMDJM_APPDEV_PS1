@@ -72,7 +72,7 @@ export default function ReviewView({ items }) {
         </div>
         
         <p className="mini" style={{ fontSize: '13px', lineHeight: 1.5 }}>
-          Swipe right if you'd buy it again. Swipe left if it feels like a leak.
+          Swipe right if you&apos;d buy it again. Swipe left if it feels like a leak.
         </p>
         
         <div className="swipe-zone">

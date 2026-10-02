@@ -121,7 +121,7 @@ export default function SettingsView({ profile, settings }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
                 <strong style={{ display: 'block' }}>Overspend Alerts</strong>
-                <small style={{ color: '#777' }}>Warn me when I'm spending too fast.</small>
+                <small style={{ color: '#777' }}>Warn me when I&apos;m spending too fast.</small>
               </div>
               <input type="checkbox" checked={notifyAlerts} onChange={() => setNotifyAlerts(!notifyAlerts)} style={{ transform: 'scale(1.5)' }} />
             </div>

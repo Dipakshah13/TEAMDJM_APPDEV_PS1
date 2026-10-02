@@ -132,7 +132,7 @@ export default function InsightsView({ settings, items, today }) {
             {insights.leaks.length > 0 && (
               <div className="card alert mt">
                 <strong>Cut out {insights.leaks[0]?.name} for a week!</strong>
-                <p>That's ₹{insights.leaks[0]?.total} you can redirect without changing your essentials.</p>
+                <p>That&apos;s ₹{insights.leaks[0]?.total} you can redirect without changing your essentials.</p>
               </div>
             )}
             
