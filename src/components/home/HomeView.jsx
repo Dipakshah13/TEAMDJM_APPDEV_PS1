@@ -1,16 +1,18 @@
 'use client'
 
 import React from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function HomeView({ settings, items, recentReceipts, today }) {
+  const router = useRouter()
   // We can calculate left this month etc if we want, but let's use the static Stitch design for now
   // with some dynamic data plugged in.
   
   return (
     <section className="screen active" id="home" style={{ animation: 'smoothFadeIn 0.3s ease-out forwards' }}>
         <div className="top">
-          <div className="brand">penny.</div>
-          <div className="avatar">JS</div>
+          <div className="brand">BillBuddy</div>
+          <button className="avatar" style={{ border: 'none', cursor: 'pointer' }} onClick={() => router.push('/settings')}>JS</button>
         </div>
         
         <div className="eyebrow">October 2026 · 2nd week</div>
@@ -36,7 +38,7 @@ export default function HomeView({ settings, items, recentReceipts, today }) {
         
         <div className="section-title">
           <h2>Recent spends</h2>
-          <span className="link">SEE ALL</span>
+          <span className="link" onClick={() => router.push('/history')} style={{ cursor: 'pointer' }}>SEE ALL</span>
         </div>
         
         {/* Iterate over items or use static for now */}

@@ -8,7 +8,7 @@ export default function HistoryView({ receipts }) {
   return (
     <section className="screen active" style={{ animation: 'smoothFadeIn 0.3s ease-out forwards' }}>
       <div className="scan-head">
-          <button className="back" onClick={() => router.push('/')}>‹</button>
+          <button className="back" onClick={() => router.back()}>‹</button>
           <div>
             <div className="eyebrow">Past records</div>
             <h2>History</h2>
