@@ -31,9 +31,22 @@ export default function HomeView({ settings, items, recentReceipts, today }) {
           </div>
         </div>
         
-        <div className="card alert mt">
-          <strong>⚠️ At this pace, you'll hit your limit on the 19th.</strong>
-          <p>You're spending 18% faster than your monthly plan. Small changes now can move that date.</p>
+        <div className="card mt" style={{ background: 'linear-gradient(145deg, #fff8e1 0%, #ffecc8 100%)', border: '1px solid #ffdca8', padding: '20px', position: 'relative', overflow: 'hidden', boxShadow: '0 8px 24px rgba(255, 152, 0, 0.1)' }}>
+          <div style={{ position: 'absolute', right: '-10px', top: '-10px', fontSize: '90px', opacity: 0.08, transform: 'rotate(15deg)', pointerEvents: 'none' }}>🔥</div>
+          
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', position: 'relative', zIndex: 1 }}>
+            <div style={{ background: 'linear-gradient(135deg, #ff9800, #ff5722)', width: '42px', height: '42px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0, boxShadow: '0 4px 12px rgba(255, 87, 34, 0.3)' }}>
+              ⏳
+            </div>
+            <div>
+              <strong style={{ color: '#b34700', fontSize: '15px', lineHeight: '1.2', display: 'block', letterSpacing: '-0.3px' }}>
+                You'll hit your limit by the 19th
+              </strong>
+              <p style={{ color: '#993d00', fontSize: '12.5px', marginTop: '6px', lineHeight: '1.4', opacity: 0.9 }}>
+                You're spending <strong style={{ color: '#cc3300' }}>18% faster</strong> than planned! Try skipping a few small purchases to stretch your budget.
+              </p>
+            </div>
+          </div>
         </div>
         
         <div className="section-title">
