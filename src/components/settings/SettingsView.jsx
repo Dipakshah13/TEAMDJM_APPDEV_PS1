@@ -58,18 +58,13 @@ export default function SettingsView({ profile, settings }) {
     setTheme(nextTheme)
     
     if (nextTheme === 'Dark') {
-      document.body.style.setProperty('--bg', '#191916')
-      document.body.style.setProperty('--ink', '#f0f0eb')
-      document.body.style.setProperty('--line', '#2d2d2a')
+      document.body.classList.add('dark-theme')
     } else if (nextTheme === 'Light') {
-      document.body.style.setProperty('--bg', '#e9e9e2')
-      document.body.style.setProperty('--ink', '#222')
-      document.body.style.setProperty('--line', '#dcdcd5')
+      document.body.classList.remove('dark-theme')
     } else {
-      // Auto - remove inline styles
-      document.body.style.removeProperty('--bg')
-      document.body.style.removeProperty('--ink')
-      document.body.style.removeProperty('--line')
+      // Auto - default to light or dark based on system in a real app,
+      // here we'll just clear the explicit class
+      document.body.classList.remove('dark-theme')
     }
   }
 
