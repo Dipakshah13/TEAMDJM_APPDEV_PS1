@@ -42,17 +42,17 @@ export default async function HomePage() {
     .limit(5)
 
   const budget = settings?.monthly_budget || 20000
-  const spent = monthSpent(items ?? [])
-  const safe = safeToSpend(spent, budget, today)
-  const fc = forecast(spent, budget, today)
-  const { state: sState, message: sMessage } = sproutState(fc.burnRate)
+  const spent = monthSpent(items ?? [], today)
+  const safe = safeToSpend({ budget, spent, today })
+  const fc = forecast({ spent, limit: budget, items: items ?? [], today })
+  const sprout = sproutState({ spent, budget, today })
 
   const insights = {
     budget,
     spent,
-    safe,
+    safe: { todayLimit: safe },
     forecast: fc,
-    sprout: { state: sState, message: sMessage }
+    sprout: { state: sprout.mood, message: sprout.text }
   }
 
   return (

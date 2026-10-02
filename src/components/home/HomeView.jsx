@@ -31,7 +31,7 @@ export default function HomeView({ settings, items, recentReceipts, insights, to
           </div>
         </div>
         
-        {insights.forecast.isOver && (
+        {insights.forecast.status === 'at_risk' && (
           <div className="card mt" style={{ background: 'linear-gradient(145deg, #fff8e1 0%, #ffecc8 100%)', border: '1px solid #ffdca8', padding: '20px', position: 'relative', overflow: 'hidden', boxShadow: '0 8px 24px rgba(255, 152, 0, 0.1)' }}>
             <div style={{ position: 'absolute', right: '-10px', top: '-10px', fontSize: '90px', opacity: 0.08, transform: 'rotate(15deg)', pointerEvents: 'none' }}>🔥</div>
             
@@ -41,10 +41,10 @@ export default function HomeView({ settings, items, recentReceipts, insights, to
               </div>
               <div>
                 <strong style={{ color: '#b34700', fontSize: '15px', lineHeight: '1.2', display: 'block', letterSpacing: '-0.3px' }}>
-                  You&apos;ll hit your limit by the {insights.forecast.zeroDay}th
+                  You&apos;ll hit your limit by the {insights.forecast.limitDate}th
                 </strong>
                 <p style={{ color: '#993d00', fontSize: '12.5px', marginTop: '6px', lineHeight: '1.4', opacity: 0.9 }}>
-                  You&apos;re spending <strong style={{ color: '#cc3300' }}>{Math.round((insights.forecast.burnRate - 1) * 100)}% faster</strong> than planned! Try skipping a few small purchases to stretch your budget.
+                  You&apos;re spending faster than planned! Try skipping a few small purchases to stretch your budget.
                 </p>
               </div>
             </div>
