@@ -1,0 +1,163 @@
+@import "tailwindcss";
+
+/* ─── BillBuddy Design Tokens ─────────────────────────────────────────────── */
+/*
+ * Palette derived from DESIGN-NOTES.md
+ * Deep green + mint + cream + gold coin accent
+ * (Stitch teammate will finalize; update here to re-theme the whole app)
+ */
+:root {
+  /* Brand colours */
+  --color-forest:     #1a4731;  /* deep green — primary */
+  --color-forest-mid: #2d6a4f;  /* mid green — hover/secondary */
+  --color-mint:       #52b788;  /* mint — accent */
+  --color-mint-light: #95d5b2;  /* light mint */
+  --color-cream:      #faf8f3;  /* warm off-white — bg */
+  --color-cream-dark: #f0ece0;  /* slightly darker cream — card bg */
+  --color-gold:       #f4a261;  /* gold coin — highlight */
+  --color-gold-light: #fcd5a8;  /* light gold */
+
+  /* Semantic colours */
+  --color-success: #52b788;
+  --color-warning: #f4a261;
+  --color-danger:  #e63946;
+  --color-muted:   #6b7280;
+
+  /* Typography */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  /* Spacing / Radius */
+  --radius-sm:  0.375rem;   /* 6px */
+  --radius-md:  0.75rem;    /* 12px */
+  --radius-lg:  1.25rem;    /* 20px */
+  --radius-xl:  1.75rem;    /* 28px */
+  --radius-full: 9999px;
+
+  /* Touch target minimum */
+  --touch-min: 2.75rem;     /* 44px */
+
+  /* Safe area insets */
+  --safe-top:    env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left:   env(safe-area-inset-left, 0px);
+  --safe-right:  env(safe-area-inset-right, 0px);
+}
+
+/* ─── Tailwind theme extension (CSS variables approach) ───────────────────── */
+@theme {
+  --color-forest:     var(--color-forest);
+  --color-forest-mid: var(--color-forest-mid);
+  --color-mint:       var(--color-mint);
+  --color-mint-light: var(--color-mint-light);
+  --color-cream:      var(--color-cream);
+  --color-cream-dark: var(--color-cream-dark);
+  --color-gold:       var(--color-gold);
+  --color-gold-light: var(--color-gold-light);
+  --color-success:    var(--color-success);
+  --color-warning:    var(--color-warning);
+  --color-danger:     var(--color-danger);
+  --color-muted:      var(--color-muted);
+  --font-sans:        var(--font-sans);
+  --radius-sm:        var(--radius-sm);
+  --radius-md:        var(--radius-md);
+  --radius-lg:        var(--radius-lg);
+  --radius-xl:        var(--radius-xl);
+}
+
+/* ─── Base styles ─────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-cream);
+  color: var(--color-forest);
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Scrollbar ───────────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-mint-light); border-radius: 2px; }
+
+/* ─── Focus visible (accessibility) ──────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-mint);
+  outline-offset: 2px;
+}
+
+/* ─── Transitions ─────────────────────────────────────────────────────────── */
+button, a, [role="button"] {
+  transition: opacity 0.15s ease, transform 0.15s ease, background-color 0.15s ease;
+}
+button:active, [role="button"]:active {
+  transform: scale(0.97);
+}
+
+/* ─── Typography ─────────────────────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+/* ─── Skeleton shimmer ────────────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-cream-dark) 25%,
+    #e8e3d4 50%,
+    var(--color-cream-dark) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-md);
+}
+
+/* ─── Swipe card animations ───────────────────────────────────────────────── */
+@keyframes swipe-left {
+  to { transform: translateX(-120%) rotate(-15deg); opacity: 0; }
+}
+@keyframes swipe-right {
+  to { transform: translateX(120%) rotate(15deg); opacity: 0; }
+}
+.swipe-left  { animation: swipe-left  0.3s ease-in forwards; }
+.swipe-right { animation: swipe-right 0.3s ease-in forwards; }
+
+/* ─── Fade-in ─────────────────────────────────────────────────────────────── */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-in { animation: fade-in 0.25s ease-out both; }
+
+/* ─── Safe-area bottom padding helper ────────────────────────────────────── */
+.pb-safe { padding-bottom: calc(var(--safe-bottom) + 5rem); }
+
+/* ─── Category colour chips ───────────────────────────────────────────────── */
+.chip-food          { background: #fef3c7; color: #92400e; }
+.chip-groceries     { background: #d1fae5; color: #065f46; }
+.chip-transport     { background: #dbeafe; color: #1e40af; }
+.chip-fuel          { background: #fee2e2; color: #991b1b; }
+.chip-clothing      { background: #ede9fe; color: #4c1d95; }
+.chip-entertainment { background: #fce7f3; color: #831843; }
+.chip-household     { background: #e0f2fe; color: #075985; }
+.chip-other         { background: #f3f4f6; color: #374151; }
