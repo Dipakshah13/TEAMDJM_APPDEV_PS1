@@ -21,26 +21,31 @@ export default function ScanFlow() {
       setError(null)
       
       const file = e.target.files[0]
-      const formData = new FormData()
-      formData.append('receipt', file)
-
-      try {
-        const res = await fetch('/api/extract', {
-          method: 'POST',
-          body: formData
-        })
+      
+      const reader = new FileReader()
+      reader.onload = async (event) => {
+        const base64 = event.target.result.split(',')[1]
         
-        const json = await res.json()
-        if (!res.ok) throw new Error(json.error || 'Failed to extract')
-        
-        setExtractedData(json.data)
-        setItems(json.data.items || [])
-        setTotal(json.data.total || 0)
-      } catch (err) {
-        setError(err.message)
-      } finally {
-        setLoading(false)
+        try {
+          const res = await fetch('/api/extract', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ imageBase64: base64, mediaType: file.type })
+          })
+          
+          const json = await res.json()
+          if (!res.ok) throw new Error(json.error || 'Failed to extract')
+          
+          setExtractedData(json.data)
+          setItems(json.data.items || [])
+          setTotal(json.data.total || 0)
+        } catch (err) {
+          setError(err.message)
+        } finally {
+          setLoading(false)
+        }
       }
+      reader.readAsDataURL(file)
     }
   }
 
