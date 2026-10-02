@@ -103,14 +103,23 @@ export default function ScanFlow() {
             </div>
           </div>
           
-          <label className="drop" htmlFor="file">
-            <div className="scan-icon">📷</div>
-            <h2>Snap or upload</h2>
-            <p>BillBuddy will read every product, price and category — then you can confirm before anything is saved.</p>
-            <span className="primary">Choose receipt</span>
-            <div className="mini" style={{ marginTop: '12px' }}>JPG, PNG or PDF · up to 10 MB</div>
-          </label>
-          <input accept="image/*,.pdf" id="file" type="file" onChange={handleFileChange} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <label className="drop" htmlFor="camera" style={{ cursor: 'pointer' }}>
+              <div className="scan-icon">📷</div>
+              <h2>Snap receipt</h2>
+              <p>Take a photo with your camera right now.</p>
+              <span className="primary" style={{ display: 'inline-block', marginTop: '12px' }}>Open Camera</span>
+            </label>
+            
+            <label className="drop" htmlFor="file" style={{ padding: '24px', cursor: 'pointer', borderStyle: 'dashed' }}>
+              <div style={{ fontSize: '24px', marginBottom: '8px' }}>📁</div>
+              <h2>Upload file</h2>
+              <div className="mini" style={{ marginTop: '4px' }}>JPG, PNG or PDF · up to 10 MB</div>
+            </label>
+          </div>
+
+          <input accept="image/*" capture="environment" id="camera" type="file" onChange={handleFileChange} style={{ display: 'none' }} />
+          <input accept="image/*,.pdf" id="file" type="file" onChange={handleFileChange} style={{ display: 'none' }} />
           
           <div className="card" style={{ padding: '16px', marginTop: '14px' }}>
             <b>✨ Tip</b>
