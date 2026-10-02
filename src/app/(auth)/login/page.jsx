@@ -3,19 +3,19 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Loader2, Mail, Lock, ArrowRight, Sparkles, Eye, EyeOff } from 'lucide-react'
+import { Loader2, Mail, Lock, Camera, Sparkles, BarChart2, Smile, ArrowRight, Eye, EyeOff } from 'lucide-react'
 
 export default function LoginPage() {
   const router = useRouter()
   const supabase = createClient()
 
-  const [mode, setMode] = useState('login') // 'login' | 'signup'
+  const [showEmailForm, setShowEmailForm] = useState(false)
+  const [mode, setMode] = useState('login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
-  const [guestLoading, setGuestLoading] = useState(false)
   const [message, setMessage] = useState(null)
   const [error, setError] = useState(null)
 
@@ -64,172 +64,191 @@ export default function LoginPage() {
       setGoogleLoading(false)
       setError(err.message)
     }
-    // On success, browser redirects — no need to setGoogleLoading(false)
-  }
-
-  // ── Anonymous guest ───────────────────────────────────────────────────────
-  async function handleGuest() {
-    setGuestLoading(true)
-    resetFeedback()
-    const { error: err } = await supabase.auth.signInAnonymously()
-    setGuestLoading(false)
-    if (err) return setError(err.message)
-    router.push('/')
-    router.refresh()
   }
 
   return (
-    <main className="min-h-dvh flex flex-col items-center justify-center px-6 py-12 bg-cream">
-      {/* Logo */}
-      <div className="mb-8 flex flex-col items-center gap-3 fade-in">
-        <div className="w-20 h-20 rounded-2xl bg-forest flex items-center justify-center shadow-lg">
-          <span className="text-3xl">🌱</span>
-        </div>
-        <h1 className="text-3xl font-bold text-forest tracking-tight">BillBuddy</h1>
-        <p className="text-center text-muted text-sm max-w-xs leading-relaxed">
-          Scan receipts. Stop regretting. Start saving.
-        </p>
+    <main className="min-h-dvh flex flex-col items-center justify-between px-6 py-12 bg-forest overflow-x-hidden relative" style={{ backgroundColor: '#0f3d2a' }}>
+      {/* Background glow effects */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+         <div className="absolute top-[-10%] left-[-20%] w-[50%] h-[50%] bg-mint/10 blur-[120px] rounded-full" />
+         <div className="absolute bottom-[-10%] right-[-20%] w-[50%] h-[50%] bg-mint/10 blur-[120px] rounded-full" />
       </div>
 
-      {/* Card */}
-      <div
-        className="w-full max-w-sm bg-white rounded-2xl shadow-sm border border-cream-dark p-6 fade-in"
-        style={{ animationDelay: '0.1s' }}
-      >
-        {/* Google OAuth */}
-        <button
-          id="btn-google-signin"
-          onClick={handleGoogle}
-          disabled={googleLoading}
-          className="w-full flex items-center justify-center gap-3 border border-cream-dark bg-white text-forest font-semibold py-3 rounded-xl mb-3 hover:bg-cream disabled:opacity-60 min-h-[44px] transition-colors"
-        >
-          {googleLoading ? (
-            <Loader2 size={18} className="animate-spin" />
-          ) : (
-            /* Google G icon */
-            <svg width="18" height="18" viewBox="0 0 48 48">
-              <path fill="#FFC107" d="M43.6 20H24v8h11.3C33.6 32.6 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 20-9 20-20 0-1.3-.1-2.7-.4-4z"/>
-              <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.5 29.3 4 24 4c-7.7 0-14.4 4.4-17.7 10.7z"/>
-              <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.3 35.3 26.8 36 24 36c-5.2 0-9.6-3.4-11.2-8.1l-6.6 5.1C9.7 39.6 16.4 44 24 44z"/>
-              <path fill="#1976D2" d="M43.6 20H24v8h11.3c-.8 2.2-2.3 4.1-4.2 5.5l6.2 5.2C41.1 35.2 44 30 44 24c0-1.3-.1-2.7-.4-4z"/>
-            </svg>
-          )}
-          Continue with Google
-        </button>
-
-        {/* Guest */}
-        <button
-          id="btn-continue-guest"
-          onClick={handleGuest}
-          disabled={guestLoading}
-          className="w-full flex items-center justify-center gap-2 bg-cream border border-cream-dark text-forest font-semibold py-3 rounded-xl mb-4 hover:bg-cream-dark disabled:opacity-60 min-h-[44px] transition-colors"
-        >
-          {guestLoading ? <Loader2 size={18} className="animate-spin" /> : <Sparkles size={18} />}
-          Continue as guest
-        </button>
-
-        <div className="relative flex items-center gap-3 mb-4">
-          <div className="flex-1 h-px bg-cream-dark" />
-          <span className="text-xs text-muted font-medium">or use email</span>
-          <div className="flex-1 h-px bg-cream-dark" />
+      <div className="w-full max-w-sm flex flex-col items-center z-10 w-full flex-1 pt-6">
+        
+        {/* Header */}
+        <div className="text-center mb-2 w-full">
+          {/* We use styled text to mimic the BillBuddy logo. Once you have the SVG, swap it here! */}
+          <h1 
+            className="text-5xl font-black text-mint tracking-tighter" 
+            style={{ fontFamily: '"Arial Black", Impact, sans-serif', transform: 'rotate(-2deg)' }}
+          >
+            Bill<span className="text-white">Buddy</span>
+          </h1>
+          <p className="text-white/90 text-[22px] font-medium mt-4 tracking-tight" style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic', transform: 'rotate(-2deg)' }}>
+            Your money, <br/> without the guilt.
+          </p>
         </div>
 
-        {/* Mode toggle */}
-        <div className="flex rounded-xl border border-cream-dark overflow-hidden mb-4">
-          <button
-            id="btn-mode-login"
-            onClick={() => { setMode('login'); resetFeedback() }}
-            className={`flex-1 py-2 text-sm font-semibold transition-colors ${mode === 'login' ? 'bg-forest text-white' : 'text-muted hover:bg-cream'}`}
-          >
-            Sign in
-          </button>
-          <button
-            id="btn-mode-signup"
-            onClick={() => { setMode('signup'); resetFeedback() }}
-            className={`flex-1 py-2 text-sm font-semibold transition-colors ${mode === 'signup' ? 'bg-forest text-white' : 'text-muted hover:bg-cream'}`}
-          >
-            Sign up
-          </button>
+        {/* Mascot Image */}
+        <div className="relative w-full max-w-[300px] aspect-square flex items-center justify-center my-4">
+          <img 
+            src="/mascot.png" 
+            alt="BillBuddy Mascot" 
+            className="w-full h-full object-contain drop-shadow-2xl z-10"
+            onError={(e) => {
+              // Hide broken image and show fallback box
+              e.target.style.display = 'none';
+              e.target.nextSibling.style.display = 'flex';
+            }}
+          />
+          {/* Fallback box if mascot.png is missing from public folder */}
+          <div className="hidden absolute inset-0 bg-white/5 rounded-3xl items-center justify-center border border-white/10 backdrop-blur-sm z-0">
+            <span className="text-white/50 text-sm font-medium text-center px-4">
+              [Save your mascot image as public/mascot.png]
+            </span>
+          </div>
         </div>
 
-        {/* Email + Password Form */}
-        <form onSubmit={handleEmailAuth} className="space-y-3">
-          {/* Email */}
-          <div>
-            <label htmlFor="email" className="block text-xs font-semibold text-forest mb-1">
-              Email address
-            </label>
-            <div className="relative">
-              <Mail size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                autoComplete="email"
-                className="w-full pl-9 pr-4 py-3 rounded-xl border border-cream-dark bg-cream text-forest placeholder:text-muted/50 text-sm focus:outline-none focus:ring-2 focus:ring-mint min-h-[44px]"
-                required
-              />
+        {/* Features Row */}
+        {!showEmailForm && (
+          <div className="flex w-full justify-between items-start my-4 px-1 gap-2">
+            <div className="flex flex-col items-center text-center gap-2 flex-1">
+              <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-mint">
+                <Camera size={20} />
+              </div>
+              <span className="text-[11px] text-white/90 font-medium leading-tight">Scan<br/>receipts</span>
+            </div>
+            <div className="flex flex-col items-center text-center gap-2 flex-1">
+              <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-mint">
+                <Sparkles size={20} />
+              </div>
+              <span className="text-[11px] text-white/90 font-medium leading-tight">Track<br/>spending</span>
+            </div>
+            <div className="flex flex-col items-center text-center gap-2 flex-1">
+              <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-mint">
+                <BarChart2 size={20} />
+              </div>
+              <span className="text-[11px] text-white/90 font-medium leading-tight">Get smart<br/>insights</span>
+            </div>
+            <div className="flex flex-col items-center text-center gap-2 flex-1">
+              <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-mint">
+                <Smile size={20} />
+              </div>
+              <span className="text-[11px] text-white/90 font-medium leading-tight">Avoid<br/>regret</span>
             </div>
           </div>
+        )}
+      </div>
 
-          {/* Password */}
-          <div>
-            <label htmlFor="password" className="block text-xs font-semibold text-forest mb-1">
-              Password
-            </label>
-            <div className="relative">
-              <Lock size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-              <input
-                id="password"
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder={mode === 'signup' ? 'Min 6 characters' : '••••••••'}
-                autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
-                className="w-full pl-9 pr-10 py-3 rounded-xl border border-cream-dark bg-cream text-forest placeholder:text-muted/50 text-sm focus:outline-none focus:ring-2 focus:ring-mint min-h-[44px]"
-                required
-                minLength={6}
-              />
-              <button
-                type="button"
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-                onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-forest min-w-[24px] min-h-[24px] flex items-center justify-center"
-              >
-                {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+      {/* Auth Buttons / Form */}
+      <div className="w-full max-w-sm flex flex-col gap-4 z-10 w-full mt-auto pb-4">
+        {!showEmailForm ? (
+          <>
+            <button
+              onClick={handleGoogle}
+              disabled={googleLoading}
+              className="w-full bg-mint text-[#0f3d2a] font-bold py-[18px] rounded-full flex items-center justify-center gap-3 text-[17px] hover:bg-mint-light transition-transform active:scale-[0.98]"
+            >
+              {googleLoading ? (
+                <Loader2 size={24} className="animate-spin" />
+              ) : (
+                <svg width="22" height="22" viewBox="0 0 48 48">
+                  <path fill="#0f3d2a" d="M43.6 20H24v8h11.3C33.6 32.6 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 20-9 20-20 0-1.3-.1-2.7-.4-4z"/>
+                </svg>
+              )}
+              Continue with Google
+            </button>
+
+            <button
+              onClick={() => setShowEmailForm(true)}
+              className="w-full bg-transparent border-[1.5px] border-white/50 text-white font-bold py-[18px] rounded-full flex items-center justify-center gap-3 text-[17px] hover:bg-white/10 transition-transform active:scale-[0.98]"
+            >
+              <Mail size={22} />
+              Continue with Email
+            </button>
+          </>
+        ) : (
+          <div className="bg-white/10 p-6 rounded-[32px] backdrop-blur-md border border-white/20 fade-in shadow-2xl">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-white text-xl font-bold">Email Sign In</h2>
+              <button onClick={() => setShowEmailForm(false)} className="text-white/60 hover:text-white text-sm">
+                Cancel
               </button>
             </div>
+            
+            <div className="flex rounded-xl bg-black/20 p-1 overflow-hidden mb-6">
+              <button
+                onClick={() => { setMode('login'); resetFeedback() }}
+                className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-colors ${mode === 'login' ? 'bg-mint text-[#0f3d2a]' : 'text-white/60 hover:text-white'}`}
+              >
+                Sign in
+              </button>
+              <button
+                onClick={() => { setMode('signup'); resetFeedback() }}
+                className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-colors ${mode === 'signup' ? 'bg-mint text-[#0f3d2a]' : 'text-white/60 hover:text-white'}`}
+              >
+                Sign up
+              </button>
+            </div>
+
+            <form onSubmit={handleEmailAuth} className="space-y-4">
+              <div>
+                <div className="relative">
+                  <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50" />
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    className="w-full pl-11 pr-4 py-4 rounded-2xl bg-black/20 border border-white/10 text-white placeholder:text-white/40 text-[15px] focus:outline-none focus:border-mint focus:bg-black/40 transition-colors"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <div className="relative">
+                  <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50" />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder={mode === 'signup' ? 'Min 6 characters' : 'Password'}
+                    className="w-full pl-11 pr-12 py-4 rounded-2xl bg-black/20 border border-white/10 text-white placeholder:text-white/40 text-[15px] focus:outline-none focus:border-mint focus:bg-black/40 transition-colors"
+                    required
+                    minLength={6}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading || !email.trim() || !password}
+                className="w-full flex items-center justify-center gap-2 bg-mint text-[#0f3d2a] font-bold py-4 rounded-2xl hover:bg-mint-light disabled:opacity-50 transition-colors mt-2 text-[16px]"
+              >
+                {loading ? <Loader2 size={20} className="animate-spin" /> : <ArrowRight size={20} />}
+                {mode === 'signup' ? 'Create Account' : 'Sign In'}
+              </button>
+            </form>
+
+            {message && <p className="mt-4 text-xs text-center text-mint font-medium">{message}</p>}
+            {error && <p className="mt-4 text-xs text-center text-red-300 font-medium">{error}</p>}
           </div>
-
-          <button
-            id="btn-email-submit"
-            type="submit"
-            disabled={loading || !email.trim() || !password}
-            className="w-full flex items-center justify-center gap-2 bg-mint text-white font-semibold py-3 rounded-xl hover:bg-forest-mid disabled:opacity-60 min-h-[44px] transition-colors"
-          >
-            {loading ? <Loader2 size={18} className="animate-spin" /> : <ArrowRight size={18} />}
-            {mode === 'signup' ? 'Create account' : 'Sign in'}
-          </button>
-        </form>
-
-        {/* Feedback */}
-        {message && (
-          <p className="mt-3 text-xs text-center text-success font-medium bg-mint/10 rounded-lg py-2 px-3">
-            {message}
-          </p>
         )}
-        {error && (
-          <p className="mt-3 text-xs text-center text-danger font-medium bg-danger/10 rounded-lg py-2 px-3">
-            {error}
-          </p>
-        )}
+
+        <p className="mt-6 text-center text-[11px] text-white/60 px-4 leading-relaxed font-medium">
+          By continuing, you agree to our <br/>
+          <a href="#" className="underline hover:text-white transition-colors">Terms of Service</a> and <a href="#" className="underline hover:text-white transition-colors">Privacy Policy</a>
+        </p>
       </div>
-
-      <p className="mt-8 text-center text-xs text-muted max-w-xs fade-in" style={{ animationDelay: '0.2s' }}>
-        By continuing, you agree that receipts are processed to extract items only — images are never stored.
-      </p>
     </main>
   )
 }
